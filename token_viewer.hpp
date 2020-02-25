@@ -1,5 +1,9 @@
 #pragma once
 
+#include "token.hpp"
+
+#include <vector>
+
 namespace TabCompletion
 {
     /**
@@ -27,10 +31,10 @@ namespace TabCompletion
          *
          *  @return nullptr or last identifier that is not the exact last.
          */
-        Token* secondToLastIdent() const;
+        Token const* secondToLastIdent() const;
 
     private:
-        Token const& end();
+        Token const& end() const;
 
     private:
         std::vector <Token> const* tokens_;

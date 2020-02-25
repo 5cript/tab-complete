@@ -1,2 +1,8 @@
 main.cpp
 tab-complete.cbp
+*.cbp
+*.depend
+*.layout
+*_log.html
+bin/*
+obj/*

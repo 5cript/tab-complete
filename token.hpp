@@ -1,22 +1,25 @@
 #pragma once
 
+#include <string>
+
 namespace TabCompletion
 {
     enum TokenType
     {
-        Identifier,
-        Operator,
+        Indeterminate,
+        IdentifierAndPunct,
         Pipe,
-        Space
+        Space,
+        Special
     };
 
     class Token
     {
     public:
-        Token(std::string tok, TokenType type);
+        Token(TokenType type = TokenType::Indeterminate, std::string tok = "");
         TokenType type() const;
         std::string token() const;
-        std::string const& tokenHandle() const;
+        std::string& tokenHandle();
 
     private:
         std::string tok_;

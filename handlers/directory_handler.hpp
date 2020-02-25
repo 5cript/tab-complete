@@ -8,20 +8,22 @@
 
 namespace TabCompletion
 {
-    class DirectoryHandler : public GenericCompletionHandler
+    class DirectoryHandler
     {
     public:
-        DirectoryHandler(std::path baseDir);
+        constexpr static auto basicCacheMax = 1000;
 
-        CompletionResult tryComplete(std::vector <Token> const& tokens) const override;
+        DirectoryHandler(std::filesystem::path baseDir);
+
+        CompletionResult tryComplete(std::vector <Token> const& tokens, bool forceAll = false);
 
     private:
         /// update cache if older than X seconds
-        void updateCache();
+        void updateCache(bool forceAll);
 
     private:
-        std::path baseDir_;
+        std::filesystem::path baseDir_;
         std::chrono::system_clock::time_point lastCacheUpdate_;
-        std::vector <std::path> cache_;
+        std::vector <std::filesystem::path> cache_;
     };
 }

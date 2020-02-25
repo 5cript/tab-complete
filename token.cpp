@@ -3,7 +3,7 @@
 namespace TabCompletion
 {
 //#####################################################################################################################
-    Token::Token(std::string tok, TokenType type)
+    Token::Token(TokenType type, std::string tok)
         : tok_{std::move(tok)}
         , type_{type}
     {
@@ -14,7 +14,7 @@ namespace TabCompletion
         return tok_;
     }
 //---------------------------------------------------------------------------------------------------------------------
-    std::string const& Token::tokenHandle() const
+    std::string& Token::tokenHandle()
     {
         return tok_;
     }

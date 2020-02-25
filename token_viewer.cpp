@@ -9,7 +9,7 @@ namespace TabCompletion
 
     }
 //---------------------------------------------------------------------------------------------------------------------
-    Token const& TokenViewer::end()
+    Token const& TokenViewer::end() const
     {
         return *tokens_->rbegin();
     }
@@ -40,25 +40,25 @@ namespace TabCompletion
         if (tokens_->empty())
             return false;
 
-        return end().type() == TokenType::Identifier;
+        return end().type() == TokenType::IdentifierAndPunct;
     }
 //---------------------------------------------------------------------------------------------------------------------
-    Token* TokenViewer::secondToLast() const
+    Token const* TokenViewer::secondToLastIdent() const
     {
         if (tokens_->empty())
             return nullptr;
 
-        const auto tokSize = tokens_.size();
+        const auto tokSize = tokens_->size();
 
         if (end().type() == TokenType::Space && tokSize >= 2)
-            return &tokens_[tokSize - 2];
+            return &tokens_->operator[](tokSize - 2);
 
-        if (end().type() == TokenType::Identifier && tokSize >= 3)
+        if (end().type() == TokenType::IdentifierAndPunct && tokSize >= 3)
         {
-            if (tokens_[tokSize - 2].type() != TokenType::Space)
+            if (tokens_->operator[](tokSize - 2).type() != TokenType::Space)
                 return nullptr;
             else
-                return &tokens_[tokSize - 3];
+                return &tokens_->operator[](tokSize - 3);
         }
 
         return nullptr;

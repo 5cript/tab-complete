@@ -109,11 +109,13 @@ namespace TabCompletion
                 res.suggestions.push_back(p.filename().string());
         }
 
+        /*
         if (res.suggestions.size() == 1)
         {
             auto& f = res.suggestions.front();
             f = f.substr(fileNamePart.size(), f.size() - fileNamePart.size());
         }
+        */
 
         return res;
     }

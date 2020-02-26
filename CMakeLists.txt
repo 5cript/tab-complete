@@ -15,11 +15,22 @@ endif()
 # Project
 project(tab-complete)
 
-# Add files
-file(GLOB sources "*.cpp" "handlers/*.cpp")
-
 # Add library
-add_library(${PROJECT_NAME} STATIC ${sources})
+add_library(${PROJECT_NAME} STATIC)
+
+target_sources(
+	${PROJECT_NAME}
+	PRIVATE
+		"completion_handler.cpp"
+		"token.cpp"
+		"token_provider.cpp"
+		"token_viewer.cpp"
+		"handlers/combined_handlers.cpp"
+		"handlers/common_tools.cpp"
+		"handlers/directory_handler.cpp"
+		"handlers/git_handler.cpp"
+		"handlers/systemctl_handler.cpp"
+)
 
 # Compiler Options
 set(DEBUG_OPTIONS -fexceptions -g -Wall -pedantic-errors -pedantic)

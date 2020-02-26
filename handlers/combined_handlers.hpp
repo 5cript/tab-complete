@@ -5,6 +5,7 @@
 #include "../completion_handler.hpp"
 
 #include <filesystem>
+#include <optional>
 #include <memory>
 
 namespace TabCompletion

@@ -7,3 +7,5 @@ tab-complete.cbp
 bin/*
 obj/*
 out.txt
+build.sh
+build/*

@@ -1,0 +1,17 @@
+git a
+git c
+git p
+git add 
+git commit -m 
+systemctl sta
+systemctl --h
+systemctl --
+systemctl -
+git -
+
+./
+g
+g+
+gi
+system
+./t

@@ -32,6 +32,8 @@ namespace TabCompletion
 
         void dump();
 
+        std::vector <Token> const& tokens() const;
+
     private:
         bool isIdentifierOrPunct(int c) const noexcept;
         bool isSpace(int c) const noexcept;

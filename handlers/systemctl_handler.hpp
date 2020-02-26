@@ -9,13 +9,10 @@
 
 namespace TabCompletion
 {
-    class GitHandler
+    class SystemctlHandler
     {
     public:
-        /**
-         *  Passing in directory handler to make use of caching.
-         */
-        GitHandler(DirectoryHandler* dHandler);
+        SystemctlHandler(DirectoryHandler* dHandler, std::optional <std::string> const& modulePath = std::nullopt);
 
         CompletionResult tryComplete(std::vector <Token> const& tokens, bool forceAll = false);
 
@@ -23,6 +20,6 @@ namespace TabCompletion
         struct Constants;
 
         DirectoryHandler* dHandler_;
+        std::string modulePath_;
     };
-
 }

@@ -1,6 +1,8 @@
 #include "git_handler.hpp"
 #include "directory_handler.hpp"
 
+#include "common_tools.hpp"
+
 using namespace std::string_literals;
 
 namespace TabCompletion
@@ -38,10 +40,11 @@ namespace TabCompletion
         };
     };
 //#####################################################################################################################
-    GitHandler::GitHandler(std::filesystem::path baseDir)
-        : baseDir_{std::move(baseDir_)}
+    GitHandler::GitHandler(DirectoryHandler* dHandler)
+        : dHandler_{dHandler}
     {
-
+        if (dHandler_ == nullptr)
+            throw std::invalid_argument("passing a directory handler is not optional");
     }
 //---------------------------------------------------------------------------------------------------------------------
     CompletionResult GitHandler::tryComplete(std::vector <Token> const& tokens, bool forceAll)
@@ -52,66 +55,17 @@ namespace TabCompletion
         if (tokens.front().token() != "git")
             return CompletionResult::makeInappropriateResult();
 
-        Constants consts;
+        const Constants consts;
 
-        // "git "
-        if (tokens.size() == 2 && tokens.back().token() == " ")
-        {
-            CompletionResult res;
-            for (auto i = std::begin(consts.otherCommands); i != std::end(consts.otherCommands); ++i)
-                res.suggestions.push_back(*i);
-        }
-
-        // "git -"
-        if (tokens.size() == 3 && tokens.back().token() == "-")
-        {
-            CompletionResult res;
-            for (auto i = std::begin(consts.dashCommands); i != std::end(consts.dashCommands); ++i)
-                res.suggestions.push_back("-"s + *i);
-        }
-
-        // "git --"
-        if (tokens.size() == 3 && tokens.back().token() == "--")
-        {
-            CompletionResult res;
-            for (auto i = std::begin(consts.dashDashCommands); i != std::end(consts.dashDashCommands); ++i)
-                res.suggestions.push_back("--"s + *i);
-        }
-
-        // "git ?"
-        if (tokens.size() == 3 && tokens.back().type() == TokenType::IdentifierAndPunct)
-        {
-            CompletionResult res;
-            auto checkAgainst = tokens.back().token();
-            for (auto i = std::begin(consts.otherCommands); i != std::end(consts.otherCommands); ++i)
-            {
-                if (i->size() >= checkAgainst.size() && i->substr(0, checkAgainst.size()) == checkAgainst)
-                    res.suggestions.push_back(*i);
-            }
-            if (checkAgainst.size() > 2 && checkAgainst.substr(0, 2) == "--")
-            {
-                checkAgainst = checkAgainst.substr(2, checkAgainst.size() - 2);
-                for (auto i = std::begin(consts.dashDashCommands); i != std::end(consts.dashDashCommands); ++i)
-                {
-                    if (i->size() >= checkAgainst.size() && i->substr(0, checkAgainst.size()) == checkAgainst)
-                        res.suggestions.push_back(*i);
-                }
-            }
-            return res;
-        }
-
-        // "git c ?"
-        if (tokens.size() > 3)
-        {
-            std::vector <Token> tokenCut;
-            if (tokens.back().type() == TokenType::IdentifierAndPunct)
-                tokenCut.push_back(tokens.back());
-
-            DirectoryHandler dh{baseDir_};
-            return dh.tryComplete(tokenCut, forceAll);
-        }
-
-        return {};
+        return tryCompleteBaseCommands
+        (
+            tokens,
+            forceAll,
+            *dHandler_,
+            consts.dashCommands,
+            consts.dashDashCommands,
+            consts.otherCommands
+        );
     }
 //#####################################################################################################################
 }

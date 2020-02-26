@@ -19,6 +19,12 @@ namespace TabCompletion
             {
                 for (; i != view.size(); ++i)
                 {
+                    if (lastToken.isUnfinishedQuote())
+                    {
+                        lastToken.tokenHandle().push_back(view[i]);
+                        continue;
+                    }
+
                     if (isIdentifierOrPunct(view[i]))
                         lastToken.tokenHandle().push_back(view[i]);
                     else
@@ -27,10 +33,6 @@ namespace TabCompletion
             }
         }
 
-        // new toks
-        Token curToken;
-        for (; i != view.size(); ++i)
-        {
 #define PUSH_TOKEN_AND_REWIND \
     { \
         tokens_.push_back(curToken); \
@@ -39,7 +41,19 @@ namespace TabCompletion
         continue; \
     }
 
+        // new toks
+        Token curToken;
+        for (; i != view.size(); ++i)
+        {
             char c = view[i];
+
+            // stuff everything in quoted blocks:
+            if (curToken.isUnfinishedQuote())
+            {
+                curToken.tokenHandle().push_back(c);
+                continue;
+            }
+
             if (curToken.type() == TokenType::Indeterminate)
             {
                 if (isIdentifierOrPunct(c))
@@ -124,6 +138,11 @@ namespace TabCompletion
         {
             std::cout << static_cast <int> (tok.type()) << ": '" << tok.token() << "'\n";
         }
+    }
+//---------------------------------------------------------------------------------------------------------------------
+    std::vector <Token> const& TokenProvider::tokens() const
+    {
+        return tokens_;
     }
 //#####################################################################################################################
 }

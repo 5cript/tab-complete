@@ -8,6 +8,7 @@ systemctl --h
 systemctl --
 systemctl -
 git -
+sudo systemctl s
 
 ./
 g
@@ -15,3 +16,4 @@ g+
 gi
 system
 ./t
+ls ./

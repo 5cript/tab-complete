@@ -17,7 +17,7 @@ namespace TabCompletion
     public:
         CombinedHandler(DirectoryHandler* dHandler, std::optional <std::string> const& modulePath = std::nullopt);
 
-        CompletionResult tryComplete(std::vector <Token> const& tokens, char pathSplitter, bool forceAll = false);
+        CompletionResult tryComplete(std::vector <Token> tokens, char pathSplitter, bool forceAll = false);
 
     private:
         struct Constants;

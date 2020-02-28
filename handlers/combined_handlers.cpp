@@ -16,6 +16,10 @@ extern char **environ;
 namespace TabCompletion
 {
 //#####################################################################################################################
+    struct CombinedHandler::Constants
+    {
+    };
+//#####################################################################################################################
     CombinedHandler::CombinedHandler(DirectoryHandler* dHandler, std::optional <std::string> const& modulePath)
         : dHandler_{dHandler}
     {
@@ -25,7 +29,7 @@ namespace TabCompletion
             modulePath_ = "/etc/systemd/system/";
     }
 //---------------------------------------------------------------------------------------------------------------------
-    CompletionResult CombinedHandler::tryComplete(std::vector <Token> const& tokens, char pathSplitter, bool forceAll)
+    CompletionResult CombinedHandler::tryComplete(std::vector <Token> tokens, char pathSplitter, bool forceAll)
     {
         if (tokens.empty())
             return {};
@@ -34,28 +38,39 @@ namespace TabCompletion
             return (tok.type() == TokenType::Pipe);
         });
 
-        if (!tokens.empty())
+        if (tokens.front().token() == "sudo" && tokens.size() >= 2)
         {
-            auto start = std::begin(tokens);
-            if (res != std::rend(tokens))
-            {
-                auto distFromBack = std::distance(std::rbegin(tokens), res);
-                start += tokens.size() - distFromBack;
-            }
-            if (start->token() == "git")
-            {
-                auto git = GitHandler{dHandler_};
-                auto res = git.tryComplete(std::vector <Token> {start, std::end(tokens)});
-                if (!res.suggestions.empty())
-                    return res;
-            }
-            if (start->token() == "systemctl")
-            {
-                auto git = SystemctlHandler{dHandler_};
-                auto res = git.tryComplete(std::vector <Token> {start, std::end(tokens)});
-                if (!res.suggestions.empty())
-                    return res;
-            }
+            tokens.erase(std::begin(tokens), std::begin(tokens) + 2);
+            //tokens.erase(std::begin(tokens));
+        }
+
+        auto start = std::begin(tokens);
+        if (res != std::rend(tokens))
+        {
+            auto distFromBack = std::distance(std::rbegin(tokens), res);
+            start += tokens.size() - distFromBack;
+        }
+        if (start->token() == "git")
+        {
+            auto git = GitHandler{dHandler_};
+            auto res = git.tryComplete(std::vector <Token> {start, std::end(tokens)});
+            if (!res.suggestions.empty())
+                return res;
+        }
+        if (start->token() == "systemctl")
+        {
+            auto git = SystemctlHandler{dHandler_};
+            auto res = git.tryComplete(std::vector <Token> {start, std::end(tokens)});
+            if (!res.suggestions.empty())
+                return res;
+        }
+        if (start->token() == "ls")
+        {
+            return dHandler_->tryComplete(tokens, forceAll, ScanningFilter::onlyDirectories());
+        }
+        if (start->token() == "cat")
+        {
+            return dHandler_->tryComplete(tokens, forceAll, ScanningFilter::onlyFiles());
         }
 
         if (tokens.size() == 1)
@@ -90,7 +105,7 @@ namespace TabCompletion
         }
         else
         {
-            return dHandler_->tryComplete(tokens);
+            return dHandler_->tryComplete(tokens, forceAll);
         }
 
         return {};

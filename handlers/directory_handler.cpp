@@ -22,7 +22,7 @@ namespace TabCompletion
 
     }
 //---------------------------------------------------------------------------------------------------------------------
-    CompletionResult DirectoryHandler::tryComplete(std::vector <Token> const& tokens, bool forceAll)
+    CompletionResult DirectoryHandler::tryComplete(std::vector <Token> const& tokens, bool forceAll, ScanningFilter const& filter)
     {
         lastError_ = "";
 
@@ -76,7 +76,7 @@ namespace TabCompletion
                     try
                     {
                         cachedPath_ = p.parent_path();
-                        updateCache(forceAll);
+                        updateCache(forceAll, filter);
 
                         fileNamePart = p.filename().string();
                     }
@@ -95,7 +95,7 @@ namespace TabCompletion
         if (searchLocal)
         {
             cachedPath_ = baseDir_;
-            updateCache(forceAll);
+            updateCache(forceAll, filter);
         }
 
         CompletionResult res{};
@@ -120,7 +120,7 @@ namespace TabCompletion
         return res;
     }
 //---------------------------------------------------------------------------------------------------------------------
-    void DirectoryHandler::updateCache(bool forceAll)
+    void DirectoryHandler::updateCache(bool forceAll, ScanningFilter const& filter)
     {
         try
         {
@@ -135,7 +135,7 @@ namespace TabCompletion
                 return;
 
             localCache_.clear();
-            auto fillCache = [this, forceAll](auto typeDummy)
+            auto fillCache = [this, forceAll, &filter](auto typeDummy)
             {
                 using iterator_t = std::decay_t <decltype(typeDummy)>;
 
@@ -145,6 +145,8 @@ namespace TabCompletion
                     int c = basicCacheMax;
                     for (const auto & entry : iterator_t{cachedPath_})
                     {
+                        if (!filter.satisfiesFilter(entry))
+                            continue;
                         localCache_.push_back(entry.path());
                         --c;
                         if (c <= 0)
@@ -155,7 +157,11 @@ namespace TabCompletion
                 {
                     localCache_.reserve(1000);
                     for (const auto & entry : iterator_t{cachedPath_})
+                    {
+                        if (!filter.satisfiesFilter(entry))
+                            continue;
                         localCache_.push_back(entry.path().filename());
+                    }
                 }
             };
 

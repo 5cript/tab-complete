@@ -30,6 +30,7 @@ target_sources(
 		"handlers/directory_handler.cpp"
 		"handlers/git_handler.cpp"
 		"handlers/systemctl_handler.cpp"
+		"handlers/sudo_handler.cpp"
 )
 
 # Compiler Options
